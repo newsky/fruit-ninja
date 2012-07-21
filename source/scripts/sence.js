@@ -1,47 +1,53 @@
-var Ucren = require("lib/ucren");
-var fruit = require("factory/fruit");
-var flash = require("object/flash");
+var Ucren = require( "lib/ucren" );
+var sound = require( "lib/sound" );
+var fruit = require( "factory/fruit" );
+var flash = require( "object/flash" );
 
-var state = require("state");
-var message = require("message");
+var state = require( "state" );
+var message = require( "message" );
 
 // the fixed elements
-var background = require("object/background");
-var fps = require("object/fps");
+var background = require( "object/background" );
+var fps = require( "object/fps" );
 
 // the home page elements
-var homeMask = require("object/home-mask");
-var logo = require("object/logo");
-var ninja = require("object/ninja")
-var homeDesc = require("object/home-desc");
+var homeMask = require( "object/home-mask" );
+var logo = require( "object/logo" );
+var ninja = require( "object/ninja" )
+var homeDesc = require( "object/home-desc" );
 
-var dojo = require("object/dojo");
-var newGame = require("object/new-game");
-var quit = require("object/quit");
-var newSign = require("object/new");
+var dojo = require( "object/dojo" );
+var newGame = require( "object/new-game" );
+var quit = require( "object/quit" );
+var newSign = require( "object/new" );
 var peach, sandia, boom;
 
 // the elements in game body
-var score = require("object/score");
-var lose = require("object/lose");
+var score = require( "object/score" );
+var lose = require( "object/lose" );
 
 // the game logic
-var game = require("game");
+var game = require( "game" );
 
 // the elements in 'developing' module
-var developing = require("object/developing");
-var gameOver = require("object/game-over");
+var developing = require( "object/developing" );
+var gameOver = require( "object/game-over" );
 
 // commons
-var message = require("message");
-var timeline = require("timeline");
+var message = require( "message" );
+var timeline = require( "timeline" );
 var setTimeout = timeline.setTimeout.bind( timeline );
 var setInterval = timeline.setInterval.bind( timeline );
 
+var menuSnd;
+var gameStartSnd;
+
 // initialize sence
 exports.init = function(){
-	[ background, homeMask, logo, ninja, homeDesc, dojo, newSign, newGame, quit, score, lose, developing, gameOver, flash, fps ].invoke( "set" );
-    setInterval( fps.update.bind( fps ), 500 );
+    menuSnd = sound.create( "sound/menu" );
+    gameStartSnd = sound.create( "sound/start" );
+	[ background, homeMask, logo, ninja, homeDesc, dojo, newSign, newGame, quit, score, lose, developing, gameOver, flash /*, fps */ ].invoke( "set" );
+    // setInterval( fps.update.bind( fps ), 500 );
 };
 
 // switch sence
@@ -113,6 +119,7 @@ exports.showMenu = function( callback ){
     group.invoke( "show" );
     [ peach, sandia ].invoke( "rotate", 2500 );
 
+    menuSnd.play();
     setTimeout( callback, 2500 );
 };
 
@@ -122,6 +129,7 @@ exports.hideMenu = function( callback ){
     [ homeMask, logo, ninja, homeDesc ].invoke( "hide" );
     [ peach, sandia, boom ].invoke( "fallOff", 150 );
 
+    menuSnd.stop();
     setTimeout( callback, fruit.getDropTimeSetting() );
 };
 
@@ -130,7 +138,8 @@ exports.showNewGame = function( callback ){
     score.show();
     lose.show();
     game.start();
-    // developing.show( 1000 );
+    
+    gameStartSnd.play();
     setTimeout( callback, 1000 );
 };
 
@@ -138,6 +147,8 @@ exports.showNewGame = function( callback ){
 exports.hideNewGame = function( callback ){
     score.hide();
     lose.hide();
+
+    gameStartSnd.stop();
     setTimeout( callback, 1000 );
 };
 
